@@ -27,6 +27,18 @@ window.__LOGO_B64__ = "iVBORw0KGgoAAAANSUhEUgAAHkcAAAVdCAYAAAEuQoseAAAACXBIWXMAA
 </script>
 <script type="text/babel">
 const { useState, useEffect, useRef } = React;
+
+function useIsMobile(breakpoint = 768) {
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < breakpoint : false
+  );
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < breakpoint);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
+  }, [breakpoint]);
+  return isMobile;
+}
 const LOGO_B64 = window.__LOGO_B64__;
 
 const colors = {
@@ -57,6 +69,7 @@ const font = "'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, He
 function PitchDeck() {
   const [activeSection, setActiveSection] = useState('hero');
   const isScrollingRef = useRef(false);
+  const isMobile = useIsMobile();
 
   const sections = [
     { id: 'hero', label: 'Home' },
@@ -103,7 +116,7 @@ function PitchDeck() {
   // ─── Reusable Styles ───
   const sectionStyle = (bg = colors.white) => ({
     background: bg,
-    padding: '5rem 2rem',
+    padding: isMobile ? '3rem 1.25rem' : '5rem 2rem',
   });
   const innerStyle = { maxWidth: '960px', margin: '0 auto' };
   const eyebrow = {
@@ -111,7 +124,7 @@ function PitchDeck() {
     textTransform: 'uppercase', color: colors.accent, marginBottom: '0.75rem',
   };
   const h2Style = {
-    fontSize: '2.4rem', fontWeight: 800, color: colors.primary,
+    fontSize: isMobile ? '1.75rem' : '2.4rem', fontWeight: 800, color: colors.primary,
     lineHeight: 1.2, marginBottom: '1.5rem', letterSpacing: '-0.02em',
   };
   const prose = {
@@ -124,9 +137,10 @@ function PitchDeck() {
   // ─── Photo Divider ───
   const PhotoDivider = ({ src, alt }) => (
     <div style={{
-      height: 280, width: '100%',
+      height: isMobile ? 180 : 280, width: '100%',
       backgroundImage: `linear-gradient(rgba(26,79,110,0.35), rgba(26,79,110,0.35)), url(${src})`,
-      backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed',
+      backgroundSize: 'cover', backgroundPosition: 'center',
+      backgroundAttachment: isMobile ? 'scroll' : 'fixed',
     }} role="img" aria-label={alt} />
   );
 
@@ -146,7 +160,7 @@ function PitchDeck() {
           {sections.map((s) => (
             <button key={s.id} onClick={() => handleNav(s.id)} style={{
               background: 'none', border: 'none', cursor: 'pointer',
-              padding: '0.9rem 1.1rem', fontSize: '0.8rem', fontWeight: 600,
+              padding: isMobile ? '0.75rem 0.65rem' : '0.9rem 1.1rem', fontSize: isMobile ? '0.72rem' : '0.8rem', fontWeight: 600,
               color: activeSection === s.id ? colors.primary : colors.muted,
               borderBottom: activeSection === s.id ? `3px solid ${colors.primary}` : '3px solid transparent',
               whiteSpace: 'nowrap', transition: 'all 0.2s', fontFamily: font,
@@ -162,7 +176,7 @@ function PitchDeck() {
       <section id="hero" style={{
         backgroundImage: `linear-gradient(rgba(13,31,45,0.75), rgba(26,79,110,0.7)), url(${images.hero})`,
         backgroundSize: 'cover', backgroundPosition: 'center',
-        color: colors.white, padding: '6rem 2rem 5rem', textAlign: 'center',
+        color: colors.white, padding: isMobile ? '3.5rem 1.25rem 3rem' : '6rem 2rem 5rem', textAlign: 'center',
       }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           {LOGO_B64 ? (
@@ -176,7 +190,7 @@ function PitchDeck() {
           <div style={{ fontSize: '0.72rem', fontWeight: 600, letterSpacing: '0.2em', color: 'rgba(255,255,255,0.6)', marginBottom: '1rem', textTransform: 'uppercase' }}>
             Internal Leadership Proposal · April 2026
           </div>
-          <h1 style={{ fontSize: '3.8rem', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.03em' }}>
+          <h1 style={{ fontSize: isMobile ? '2.2rem' : '3.8rem', fontWeight: 800, lineHeight: 1.1, marginBottom: '1rem', letterSpacing: '-0.03em' }}>
             AI Services Division
           </h1>
           <div style={{ width: 48, height: 3, background: colors.gold, margin: '0 auto 1.5rem', borderRadius: 2 }} />
@@ -258,7 +272,7 @@ function PitchDeck() {
           </p>
 
           <div style={{
-            display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem',
+            display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem',
             margin: '2.5rem 0',
           }}>
             {[
@@ -419,7 +433,7 @@ function PitchDeck() {
             The service approach would focus on improving client retention, improving producer effectiveness, replacing spreadsheet-heavy workflows, increasing internal collaboration, creating repeatable tools and systems, strengthening the company's long-term platform advantage, and reinforcing and extending Frankie rather than fragmenting around it.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '1.5rem', marginTop: '2.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : 'repeat(3, 1fr)', gap: '1.5rem', marginTop: '2.5rem' }}>
             {[
               { phase: 'Phase 1', title: 'Launch & Prove', text: 'Launch with a select group of teams and projects. Focus on high-value use cases. Prove impact. Ensure strong Frankie integration principles from the beginning.', color: colors.primary },
               { phase: 'Phase 2', title: 'Standardize & Expand', text: 'Standardize the best-performing tools. Expand support to additional teams and offices. Create reusable frameworks. Deepen the feedback loop between external tools and Frankie.', color: colors.accent },
@@ -472,7 +486,7 @@ function PitchDeck() {
           <h2 style={h2Style}>A Structure Aligned with Adoption</h2>
           <div style={goldBar} />
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr', gap: '1.5rem', marginBottom: '2.5rem' }}>
             <div style={{
               background: `linear-gradient(135deg, ${colors.primary}, ${colors.accent})`,
               borderRadius: 16, padding: '2.5rem 2rem', color: colors.white, textAlign: 'center',
@@ -542,11 +556,11 @@ function PitchDeck() {
       <section id="closing" style={{
         backgroundImage: `linear-gradient(rgba(13,31,45,0.82), rgba(26,79,110,0.75)), url(${images.future})`,
         backgroundSize: 'cover', backgroundPosition: 'center',
-        color: colors.white, padding: '6rem 2rem', textAlign: 'center',
+        color: colors.white, padding: isMobile ? '3.5rem 1.25rem' : '6rem 2rem', textAlign: 'center',
       }}>
         <div style={{ maxWidth: 720, margin: '0 auto' }}>
           <div style={eyebrow}>The Bottom Line</div>
-          <h2 style={{ fontSize: '2.4rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1.5rem' }}>
+          <h2 style={{ fontSize: isMobile ? '1.75rem' : '2.4rem', fontWeight: 800, lineHeight: 1.25, marginBottom: '1.5rem' }}>
             The Future Belongs to Firms That Combine Expertise with Technology
           </h2>
           <div style={{ width: 48, height: 3, background: colors.gold, margin: '0 auto 2rem', borderRadius: 2 }} />
@@ -562,12 +576,14 @@ function PitchDeck() {
           <div style={{
             marginTop: '3.5rem', paddingTop: '2rem',
             borderTop: '1px solid rgba(255,255,255,0.15)',
-            display: 'inline-flex', gap: '2.5rem', fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)',
+            display: isMobile ? 'flex' : 'inline-flex', flexDirection: isMobile ? 'column' : 'row',
+            alignItems: isMobile ? 'center' : undefined,
+            gap: isMobile ? '1rem' : '2.5rem', fontSize: '0.85rem', color: 'rgba(255,255,255,0.65)',
           }}>
             <div><div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.6, marginBottom: 4 }}>Prepared by</div><strong style={{ color: 'rgba(255,255,255,0.9)' }}>Alex Wright</strong></div>
-            <div style={{ width: 1, background: 'rgba(255,255,255,0.15)' }} />
+            {!isMobile && <div style={{ width: 1, background: 'rgba(255,255,255,0.15)' }} />}
             <div><div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.6, marginBottom: 4 }}>Date</div><strong style={{ color: 'rgba(255,255,255,0.9)' }}>April 6, 2026</strong></div>
-            <div style={{ width: 1, background: 'rgba(255,255,255,0.15)' }} />
+            {!isMobile && <div style={{ width: 1, background: 'rgba(255,255,255,0.15)' }} />}
             <div><div style={{ fontSize: '0.65rem', letterSpacing: '0.12em', textTransform: 'uppercase', opacity: 0.6, marginBottom: 4 }}>Classification</div><strong style={{ color: 'rgba(255,255,255,0.9)' }}>Internal — Board</strong></div>
           </div>
         </div>
